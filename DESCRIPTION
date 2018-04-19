@@ -1,0 +1,20 @@
+Package: grbrowser
+Type: Package
+Title: Plot GR-metric dose-response curves
+Version: 0.0.1
+Date: 2018-04-19
+Author: Nicholas Clark
+Maintainer: Peter Haverty <phaverty@gene.com>
+Description: Makes interactive plots of dose-response curves
+License: file GNE_LICENSE
+Depends:
+  shiny
+Suggests:
+  testthat
+SwitchrLibrary: grbrowser
+FullSandbox: FALSE
+DeploySubPath: grbrowser
+RoxygenNote: 6.0.1.9000
+Roxygen: list(markdown = TRUE)
+ByteCompile: TRUE
+Encoding: UTF-8
