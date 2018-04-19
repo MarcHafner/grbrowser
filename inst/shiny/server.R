@@ -52,13 +52,13 @@ shinyServer(function(input,output,session) {
   boxplot_data_global = NULL
   #=========== plotly boxplots ===========================
   redrawPlotlyBox <- function(input, values) {
-    subset_data <<- full_data
+    subset_data <- full_data
     all_inputs <- names(input)
     for(col_name in all_inputs[grep("^subset__", all_inputs)]) {
       if (length(input[[col_name]])>0) {
         sel_values_list <- input[[col_name]]
         df_colname <- gsub("^subset__(.*)","\\1",col_name)
-        subset_data <<- subset_data[which(subset_data[[df_colname]] %in% sel_values_list),]
+        subset_data <- subset_data[which(subset_data[[df_colname]] %in% sel_values_list),]
       }
     }
     values$sub_data = subset_data
@@ -119,7 +119,7 @@ shinyServer(function(input,output,session) {
         labs(title = input$plot_title, x = input$x_label)
 
       p_plotly = plotly_build(p)
-      test_box <<- p_plotly
+      test_box <- p_plotly
       # Get y range:
       if(is.null(p_plotly$layout)) {
         top_y = p_plotly$x$layout$yaxis$range[2]
@@ -198,7 +198,7 @@ shinyServer(function(input,output,session) {
           p_ggplot = p + labs(y = parameter_choice)
         }
 
-        plotScatter_box <<- p_ggplot
+        plotScatter_box <- p_ggplot
 
         p_plotly = plotly_build(p_plotly)
         if(is.null(p_plotly$layout)) {
@@ -216,7 +216,7 @@ shinyServer(function(input,output,session) {
           p_ggplot = p + labs(y = parameter_choice)
         }
 
-        plotScatter_box <<- p_ggplot
+        plotScatter_box <- p_ggplot
         p_plotly = plotly_build(p_plotly)
       }
 
@@ -237,7 +237,7 @@ shinyServer(function(input,output,session) {
           }
         }
       }
-      test_box <<- p_plotly
+      test_box <- p_plotly
       return(p_plotly)
     }
   }
@@ -290,13 +290,13 @@ shinyServer(function(input,output,session) {
       if (is.null(doseresponsegrid_hideselector)) { doseresponsegrid_hideselector <- 0; }
       updateSelectizeInput(session, 'doseresponsegrid_hideselector', selected=doseresponsegrid_hideselector)
 
-      full_data <<- extractData(input, output, values,
+      full_data <- extractData(input, output, values,
                                            values$config$doseresponse$defaultChoicevar,
                                            values$config$doseresponse$defaultGroupingVars)
-      subset_data <<- full_data
+      subset_data <- full_data
       ####### for testing purposes
-        test_full_data <<- full_data
-        test_subset_data <<- subset_data
+        test_full_data <- full_data
+        test_subset_data <- subset_data
       #######
         if(!input$dataSet %in% c("data_6_Cancer_Therapeutics_Response_Portal_(CTRP).json")) {
           values$showtabs_drc = 1
@@ -308,7 +308,7 @@ shinyServer(function(input,output,session) {
           toggle=values$config$doseresponse$toggle,
           data=subset_data
         )
-      groupingColumns <<- values$config$groupableColumns
+      groupingColumns <- values$config$groupableColumns
       values$showtabs=1
       } else {
         values$showtabs_drc = 0
@@ -648,7 +648,7 @@ observeEvent(input$dataSet, {
     #plug in a filler data frame
     p = ggplot(data = mtcars, aes(x = mpg, y = wt)) + geom_abline(slope = 1, intercept = 0, size = .25) + scale_x_continuous(limits = c(all_min, all_max)) + scale_y_continuous(limits = c(all_min, all_max)) + coord_fixed() + xlab('') + ylab('') + ggtitle('') + geom_blank()
 
-    df_full <<- NULL
+    df_full <- NULL
     print(3)
     #try(png(paste("/mnt/raid/tmp/junk1",gsub(" ","_",date()),as.character(as.integer(1000000*runif(1))),".png",sep="_")))
     ggplotly(p) %>%
@@ -681,7 +681,7 @@ observeEvent(input$clear, {
 
     p = ggplot(data = df_sub, aes(x = get(paste0(parameter_choice,'.x'), envir = as.environment(df_sub)), y = get(paste0(parameter_choice,'.y'), envir = as.environment(df_sub)))) + geom_abline(slope = 1, intercept = 0, size = .25) + scale_x_continuous(limits = c(all_min, all_max)) + scale_y_continuous(limits = c(all_min, all_max)) + coord_fixed() + xlab('') + ylab('') + ggtitle('') + geom_blank()
 
-    df_full <<- NULL
+    df_full <- NULL
 print(3)
 #try(png(paste("/mnt/raid/tmp/junk1",gsub(" ","_",date()),as.character(as.integer(1000000*runif(1))),".png",sep="_")))
     ggplotly(p) %>%
