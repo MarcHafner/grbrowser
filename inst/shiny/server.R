@@ -139,6 +139,7 @@ shinyServer(function(input,output,session) {
             })
             toggleModal(session,"graphPopup")
         }
+
     })
 
                                         #========== Download button for scatterplot images =======
