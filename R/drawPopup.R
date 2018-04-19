@@ -1,3 +1,4 @@
+#' @export
 drawPopup <- function(curve_plot, values, example) {
   print("drawPopup function start")
   Concentration = 10^(seq(-4, 2, length.out = 200))
@@ -69,7 +70,7 @@ drawPopup <- function(curve_plot, values, example) {
       curve_data = cbind(curve_data, GR)
       curve_data = as.data.frame(curve_data)
       exper = paste(curve_plot$Perturbagen[row], curve_plot$`Cell_Line`[row], sep = ' ')
-    } 
+    }
     curve_data$experiment = exper
     if(is.null(curve_data_all)){
       curve_data_all = curve_data

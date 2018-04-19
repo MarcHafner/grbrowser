@@ -1,17 +1,17 @@
 df_full = NULL
-
+#' @export
 drawScatter <- function (input, values)
 {
   print("drawScatter function start")
   xaxis = subset_data[get(input$pick_var, envir = as.environment(subset_data)) == input$x_scatter,]
   GR1 = unique(xaxis[[input$pick_var]])
-  
+
   for(i in length(input$y_scatter)) {
     yaxis = subset_data[get(input$pick_var, envir = as.environment(subset_data)) == input$y_scatter[i],]
     GR2 = unique(yaxis[[input$pick_var]])
     yaxis$cross = paste(GR1, GR2, sep = ' x ')
     xaxis$cross = paste(GR1, GR2, sep = ' x ')
-    
+
     compare_col = which(groupingColumns == input$pick_var)
     print('compare_col')
     print(compare_col)
@@ -41,7 +41,7 @@ drawScatter <- function (input, values)
   }
   df_full$cross.x <<- factor(df_full$cross.x)
   df_sub <<- df_full
-  
+
   parameter_choice = input$pick_parameter
   print(parameter_choice)
   if(parameter_choice == 'GR50') {
@@ -62,7 +62,7 @@ drawScatter <- function (input, values)
   all_range = 2*all_max
   all_max = all_max + padding*all_range
   all_min = -all_max
-  
+
   x_var = get(paste0(parameter_choice,'.x'), envir = as.environment(df_sub))
   y_var = get(paste0(parameter_choice,'.y'), envir = as.environment(df_sub))
   print('length before')

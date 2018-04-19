@@ -1,4 +1,5 @@
 full_data = NULL
+#' @export
 extractData <- function(input, output, values, choiceVar, groupingVars) {
   print("extractData function start")
   data1 <- values$data
@@ -17,7 +18,7 @@ extractData <- function(input, output, values, choiceVar, groupingVars) {
     data1['log10(IC50)'] <- lapply(data1['IC50'], log10)
     data1['Emax'] <- values$data[values$config$scatterplot$Emax]
     }
-    
+
   full_data <<- data1
   #test <<- full_data
 }

@@ -1,3 +1,4 @@
+#' @export
 parseLabel = function(input, values, subset_data) {
   print("parseLabel function start")
   graphParams <- input$'dose-response-grid-main'
@@ -19,7 +20,7 @@ parseLabel = function(input, values, subset_data) {
       #   print('pick')
       #   print(pick_vector)
       #   params[1] = gsub('.*,' , '', params[1])
-      #   params[1] = trimws(params[1]) 
+      #   params[1] = trimws(params[1])
       #   params <- unlist(strsplit(params, split = '_'))
       # } else if(grepl('_', params[1])) {
       #if(grepl('_', params[2])) {
@@ -27,8 +28,8 @@ parseLabel = function(input, values, subset_data) {
         pick_vector = unlist(strsplit(pick, split = ','))
         params[1] = gsub('.*,' , ' ', params[1])
         params[1] = trimws(params[1])
-        
-      #} 
+
+      #}
       # else {
       #   print('comma')
       #   pick = gsub('[^,]*$', '', params[1])
@@ -69,14 +70,14 @@ parseLabel = function(input, values, subset_data) {
       print('popupData')
       print(popupData)
       q = drawPopup(popupData, values, 1)
-      
-      
+
+
     } else if(length(params) == 2) {
       print(1.11)
       col1 = params[1]
       row1 = params[2]
       popupData = subset_data[subset_data[[col1]] == row1,]
-      
+
       #for seeding density dataset with toggle
       if(exists('pick_vector2')) {
         group_cols = values$config$groupableColumns
@@ -110,6 +111,6 @@ parseLabel = function(input, values, subset_data) {
       q = ggplot(subset_data) + geom_blank()
     }
     print("parseLabel function end")
-    return(q) 
+    return(q)
   }
 }
