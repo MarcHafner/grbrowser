@@ -1,0 +1,10 @@
+# R manifest
+# Manifest type: package
+# Dependency repositories: 5
+# repo: https://cran.cnr.berkeley.edu
+# repo: https://bioconductor.org/packages/3.5/bioc
+# repo: https://bioconductor.org/packages/3.5/data/annotation
+# repo: https://bioconductor.org/packages/3.5/data/experiment
+# repo: https://bioconductor.org/packages/3.5/extra
+"name","url","type","branch","subdir","extra"
+"shinyLi","https://github.com/uc-bd2k/shinyLi","git","master",".",NA
