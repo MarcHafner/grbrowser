@@ -1,7 +1,7 @@
 Package: grbrowser
 Type: Package
 Title: Plot GR-metric dose-response curves
-Version: 0.0.1
+Version: 0.0.2
 Date: 2018-04-19
 Author: Nicholas Clark
 Maintainer: Peter Haverty <phaverty@gene.com>
