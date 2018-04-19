@@ -1,4 +1,3 @@
-full_data = NULL
 #' @export
 extractData <- function(input, output, values, choiceVar, groupingVars) {
   print("extractData function start")
@@ -19,6 +18,5 @@ extractData <- function(input, output, values, choiceVar, groupingVars) {
     data1['Emax'] <- values$data[values$config$scatterplot$Emax]
     }
 
-  full_data <<- data1
-  #test <<- full_data
+  data1
 }
