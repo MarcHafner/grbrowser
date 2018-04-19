@@ -4,15 +4,9 @@ library(plotly)
 library(ggplot2)
 library(stringr)
 library(markdown)
-
+library(grbrowser)
 
 groupingColumns = NULL
-
-source('functions/drawScatter.R', local = T)
-source('functions/drawPopup.R')
-source('functions/extractData.R', local = T)
-source('functions/update_browse_selector.R')
-source('functions/parseLabel.R')
 
 shinyServer(function(input,output,session) {
   update_browse_selector(session,c())
@@ -32,7 +26,7 @@ shinyServer(function(input,output,session) {
   observe({
     query <- parseQueryString(session$clientData$url_search)
     # Add underscores to dataset names for url
-    
+
     URLnames = gsub(" ", "_", (names(dataset_choices)))
     print('URLnames')
     print(URLnames)
@@ -49,12 +43,12 @@ shinyServer(function(input,output,session) {
       }
     }
   })
-  
+
   observeEvent(input$dataSet, {
     print('dataSet')
     print(input$dataSet)
   })
-  
+
   boxplot_data_global = NULL
   #=========== plotly boxplots ===========================
   redrawPlotlyBox <- function(input, values) {
@@ -68,7 +62,7 @@ shinyServer(function(input,output,session) {
       }
     }
     values$sub_data = subset_data
-    
+
     parameter_choice = input$pick_box_y
     print(parameter_choice)
     parameter_choice_format = parameter_choice
@@ -85,13 +79,13 @@ shinyServer(function(input,output,session) {
       if(parameter_choice == 'IC50') {
         parameter_choice = 'log10(IC50)'
         parameter_choice_format = "log<sub>10</sub>(IC<sub>50</sub>)"
-        
+
       }
     }
     boxplot_data = subset_data[subset_data[[ input$pick_box_x ]] %in% input$pick_box_factors,]
     boxplot_data = boxplot_data[is.finite(boxplot_data[[parameter_choice]]),]
     boxplot_data[[ input$pick_box_x ]] = factor(boxplot_data[[ input$pick_box_x ]])
-    
+
     if(!is.null(input$factorB) & !is.null(input$factorA)) {
       for(i in 1:length(input$factorB)) {
         boxplot_data[[ input$pick_box_x ]] = relevel(boxplot_data[[ input$pick_box_x ]], input$factorB[i])
@@ -100,14 +94,14 @@ shinyServer(function(input,output,session) {
         boxplot_data[[ input$pick_box_x ]] = relevel(boxplot_data[[ input$pick_box_x ]], input$factorA[i])
       }
     }
-    
+
     x_factor = factor(get(input$pick_box_x, envir = as.environment(boxplot_data)))
     y_variable = get(parameter_choice, envir = as.environment(boxplot_data))
     point_color = factor(get(input$pick_box_point_color, envir = as.environment(boxplot_data)))
-    
+
     unit_label = gsub("nanomolar", "nM", input$add_units)
     unit_label = gsub("micromolar", paste0("&#956;", "M"), unit_label)
-    
+
     if(dim(boxplot_data)[1] > 0) {
       p <- ggplot(boxplot_data, aes(x = x_factor, y = y_variable)) +
         geom_boxplot(aes(fill = x_factor, alpha = 0.3), outlier.color = NA, show.legend = F) +
@@ -118,7 +112,7 @@ shinyServer(function(input,output,session) {
           plot.title = element_text(size = input$plot_title_size),
           plot.margin = unit(c(5.5, 5.5, input$bottom_margin, 5.5), "points"),
           #top, right, bottom, left
-          axis.text.x = element_text(angle = input$label_rotate, 
+          axis.text.x = element_text(angle = input$label_rotate,
                                      hjust = 0.5*(1 - sin((-input$label_rotate)*pi/180)),
                                      vjust = 0.5*(1 + cos((-input$label_rotate)*pi/180)))
       ) +
@@ -135,7 +129,7 @@ shinyServer(function(input,output,session) {
         bottom_y = p_plotly[[2]]$yaxis$range[1]
       }
       total_y_range = top_y - bottom_y
-      
+
       if(!is.null(values$wilcox)) {
         # Get top of boxplot whiskers
         whiskers = NULL
@@ -159,14 +153,14 @@ shinyServer(function(input,output,session) {
         ll = lh - bump
         lenA = length(input$factorA)
         lenB = length(input$factorB)
-        
+
         if(lenA == 1 & lenB == 1) {
           p = p + annotate("text", x = 1.5, y = lh + bump/2, label = paste("p =",values$wilcox)) +
             geom_segment(x = 1, y = lh, xend = 2, yend = lh) +
             geom_segment(x = 1, y = ll, xend = 1, yend = lh) +
             geom_segment(x = 2, y = ll, xend = 2, yend = lh)
         } else if(lenA > 1 & lenB == 1) {
-          p = p + annotate("text", x = ((lenA + 1) + ((lenA+1)/2))/2, y = lh + 2*bump, 
+          p = p + annotate("text", x = ((lenA + 1) + ((lenA+1)/2))/2, y = lh + 2*bump,
                            label = paste("p =",values$wilcox)) +
             geom_segment(x = 1, y = lh, xend = lenA, yend = lh) +
             geom_segment(x = 1, y = ll, xend = 1, yend = lh) +
@@ -175,7 +169,7 @@ shinyServer(function(input,output,session) {
             geom_segment(x = (lenA+1)/2, y = lh, xend = (lenA+1)/2, yend = lh + bump) +
             geom_segment(x = lenA+1, y = ll, xend = lenA+1, yend = lh + bump)
         } else if(lenA == 1 & lenB > 1) {
-          p = p + annotate("text", x = 1.25 + .25*lenB, y = lh + 2*bump, label = paste("p =",values$wilcox)) + 
+          p = p + annotate("text", x = 1.25 + .25*lenB, y = lh + 2*bump, label = paste("p =",values$wilcox)) +
             geom_segment(x = 1, y = lh+bump, xend = .5*lenB + 1.5, yend = lh+bump) +
             geom_segment(x = 1, y = ll, xend = 1, yend = lh+bump) +
             geom_segment(x = 1.5+.5*lenB, y = lh, xend = 1.5+.5*lenB, yend = lh+bump) +
@@ -184,7 +178,7 @@ shinyServer(function(input,output,session) {
             geom_segment(x = lenB+1, y = ll, xend = lenB+1, yend = lh)
         } else if(lenA > 1 & lenB > 1) {
           p = p + annotate("text", x = .25*(lenB-1)+.75*(lenA+1), y = lh + 2*bump,
-                           label = paste("p =",values$wilcox)) + 
+                           label = paste("p =",values$wilcox)) +
             geom_segment(x = 1, y = lh, xend = lenA, yend = lh) +
             geom_segment(x = 1, y = ll, xend = 1, yend = lh) +
             geom_segment(x = lenA, y = ll, xend = lenA, yend = lh) +
@@ -203,9 +197,9 @@ shinyServer(function(input,output,session) {
         } else {
           p_ggplot = p + labs(y = parameter_choice)
         }
-        
+
         plotScatter_box <<- p_ggplot
-        
+
         p_plotly = plotly_build(p_plotly)
         if(is.null(p_plotly$layout)) {
           p_plotly$x$layout$yaxis$range[2] = top_y
@@ -221,11 +215,11 @@ shinyServer(function(input,output,session) {
         } else {
           p_ggplot = p + labs(y = parameter_choice)
         }
-        
+
         plotScatter_box <<- p_ggplot
         p_plotly = plotly_build(p_plotly)
       }
-      
+
       # Current CRAN version of plotly (3.6.0) uses p_plotly$data
       # Latest github version of plotly (4.3.5) uses p_plotly$x$data
       if(is.null(p_plotly$data)) {
@@ -233,7 +227,7 @@ shinyServer(function(input,output,session) {
           if(!is.null(p_plotly$x$data[[i]]$text)) {
             p_plotly$x$data[[i]]$text = gsub('x_factor', input$pick_box_x, p_plotly$x$data[[i]]$text)
             p_plotly$x$data[[i]]$text = gsub('y_variable', parameter_choice, p_plotly$x$data[[i]]$text)
-          } 
+          }
         }
       } else {
         for(i in 1:length(p_plotly$data)){
@@ -247,9 +241,9 @@ shinyServer(function(input,output,session) {
       return(p_plotly)
     }
   }
-  
+
   values <- reactiveValues(config=c(),data=c(),showtabs=0, showtab_drc=1, sub_data = NULL)
-  
+
   output$input_table <- DT::renderDataTable(DT::datatable({
     x<-values$data
     print(colnames(x))
@@ -261,30 +255,30 @@ shinyServer(function(input,output,session) {
     toggle(condition = values$showtabs, selector = "#tabs li a[data-value=tab-gr]")
     toggle(condition = values$showtabs_drc, selector = "#tabs li a[data-value=tab-drc]")
   })
-  
+
   observeEvent(input$dataSet, {
     if (!is.null(input$dataSet) && input$dataSet != "") {
       inFile <- input$dataSet
-      
+
       if (is.null(inFile)) {return(NULL)}
-      
+
       cat('file ', inFile, ' received\n')
       json_data <- readLines(paste0("json/", inFile))
-      
+
       values$config <- fromJSON(json_data)
-      
+
       output$datasetTitle <- renderUI(
         tags$div(tags$h3(actionLink('dataset_title', values$config$title)))
       )
-      
+
       output$datasetInfo <- renderUI(
         HTML(markdownToHTML(text=values$config$description, options=c('fragment_only')))
       )
 
       values$data <- read.table(values$config$datafile, sep="\t", header=TRUE, check.names=FALSE, fill=TRUE, stringsAsFactors = F)
-      
+
       if (length(values$config$filterColumns)) { values$data <- values$data[values$config$filterColumns] }
-      if (length(values$config$renameColumns)) { 
+      if (length(values$config$renameColumns)) {
         colnames(values$data)[which(colnames(values$data) %in% names(values$config$renameColumns))] <- unlist(values$config$renameColumns)
       }
       if (length(values$config$groupableColumns)==0) { values$config$groupableColumns = colnames(values$data) }
@@ -295,7 +289,7 @@ shinyServer(function(input,output,session) {
       doseresponsegrid_hideselector <- values$config$doseresponse$hideselector
       if (is.null(doseresponsegrid_hideselector)) { doseresponsegrid_hideselector <- 0; }
       updateSelectizeInput(session, 'doseresponsegrid_hideselector', selected=doseresponsegrid_hideselector)
-      
+
       full_data <<- extractData(input, output, values,
                                            values$config$doseresponse$defaultChoicevar,
                                            values$config$doseresponse$defaultGroupingVars)
@@ -322,7 +316,7 @@ shinyServer(function(input,output,session) {
       }
     }
   })
-  
+
 #========== Main dose-response grid =============
   observeEvent(input$'dose-response-grid-main', {
     q = parseLabel(input, values, subset_data)
@@ -372,7 +366,7 @@ shinyServer(function(input,output,session) {
       } else if(input$download_type == "csv") {
         write.table(data_output, file = filename, quote = F, sep = ',', row.names = F, col.names = T)
       }
-      
+
     }
     #,
     #contentType = paste('text/', input$download_type, sep = "")
@@ -383,34 +377,34 @@ shinyServer(function(input,output,session) {
 observeEvent(input$plot_scatter, {
   output$plotlyScatter1 <- renderPlotly({
     plot1 = isolate(drawScatter(input, values))
-print(1.1)    
+print(1.1)
 #try(png(paste("/mnt/raid/tmp/junk1",gsub(" ","_",date()),as.character(as.integer(1000000*runif(1))),".png",sep="_")))
     ggplotly(plot1) %>%
-    layout(plot1, 
+    layout(plot1,
            margin = list(
-             r = 10, 
-             t = 80, 
-             b = 60, 
+             r = 10,
+             t = 80,
+             b = 60,
              l = 100)
            )
 print(1.22)
   })
 })
 
-print(1.5)    
+print(1.5)
 observeEvent(input$plot_scatter, {
   drawScatter(input, values)
   output$plotlyScatter1 <- renderPlotly({
     plot1 = isolate(drawScatter(input, values))
     ggplotly(plot1) %>%
-    layout(plot1, 
+    layout(plot1,
            margin = list(
-             r = 10, 
-             t = 80, 
-             b = 60, 
+             r = 10,
+             t = 80,
+             b = 60,
              l = 100)
     )
-    
+
   })
 })
 
@@ -422,9 +416,9 @@ observeEvent(input$pick_parameter, {
       ggplotly(plot1) %>%
       layout(plot1,
              margin = list(
-               r = 10, 
-               t = 80, 
-               b = 60, 
+               r = 10,
+               t = 80,
+               b = 60,
                l = 100)
       )
     })
@@ -595,7 +589,7 @@ output$scatter <- renderUI({
                        radioButtons('wilcox_method', label = "",choices = c("One-sided", "Two-sided"), selected = "Two-sided", inline = F),
                        textOutput("wilcox")
       )
-      
+
     )
   }
 })
@@ -653,7 +647,7 @@ observeEvent(input$dataSet, {
     all_min = -all_max
     #plug in a filler data frame
     p = ggplot(data = mtcars, aes(x = mpg, y = wt)) + geom_abline(slope = 1, intercept = 0, size = .25) + scale_x_continuous(limits = c(all_min, all_max)) + scale_y_continuous(limits = c(all_min, all_max)) + coord_fixed() + xlab('') + ylab('') + ggtitle('') + geom_blank()
-    
+
     df_full <<- NULL
     print(3)
     #try(png(paste("/mnt/raid/tmp/junk1",gsub(" ","_",date()),as.character(as.integer(1000000*runif(1))),".png",sep="_")))
@@ -684,7 +678,7 @@ observeEvent(input$clear, {
     all_range = 2*all_max
     all_max = all_max + padding*all_range
     all_min = -all_max
-    
+
     p = ggplot(data = df_sub, aes(x = get(paste0(parameter_choice,'.x'), envir = as.environment(df_sub)), y = get(paste0(parameter_choice,'.y'), envir = as.environment(df_sub)))) + geom_abline(slope = 1, intercept = 0, size = .25) + scale_x_continuous(limits = c(all_min, all_max)) + scale_y_continuous(limits = c(all_min, all_max)) + coord_fixed() + xlab('') + ylab('') + ggtitle('') + geom_blank()
 
     df_full <<- NULL
@@ -694,7 +688,7 @@ print(3)
     layout(p, hovermode = FALSE)
 
   })
-  
+
 })
   # cancel.onSessionEnded <- session$onSessionEnded(function() {
   #   graphics.off()
