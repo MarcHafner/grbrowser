@@ -8,7 +8,16 @@ Maintainer: Peter Haverty <phaverty@gene.com>
 Description: Makes interactive plots of dose-response curves
 License: file GNE_LICENSE
 Depends:
-  shiny
+  shiny,
+  shinyjs,
+  plotly,
+  ggplot2,
+  stringr,
+  markdown,
+  shinyBS,
+  shinyLi,
+  jsonlite,
+  DT
 Suggests:
   testthat
 SwitchrLibrary: grbrowser
